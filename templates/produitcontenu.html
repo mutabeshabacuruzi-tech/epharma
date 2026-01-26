@@ -1,0 +1,74 @@
+{% extends 'staticHtml.html' %}
+{% block menuSupplementaire%}
+    <li class="m-1">
+         <a class="btn-group-lg" href="{% url 'acc' %}">
+                <i class="icon-add_circle"> log out</i>
+            </a>
+        </li>
+    {% endblock %}
+{% block content %}
+<div class="d-flex">
+    <main class="col-1" > </main>
+  {#            CONTENU DYNAMIQUE#}
+    <main class="bg-light shadow-lg container my-5 p-5 d-flex flex-column vh-100">
+   <div class="d-flex justify-content-between">
+       <H2>voici les produits disponibles en stock:</H2>
+       <div class="d-flex">
+       <a class="btn btn-outline-success" href="{% url 'viewAjoutProduit' %}">
+           <i class="btn btn-outline-success"></i><span>nouveau</span></a>
+       <a class="btn btn-outline-success" href="{% url 'venteVue'%}">
+           <i class="btn btn-outline-success"></i><span>ventes</span></a>
+       </div>
+   </div>
+        <div style="text-align: justify" class="col-100">
+                <table class="table-striped  table-bordered">
+                    <thead class="table-success">
+                    <tr>
+                        <th>PRODUIT</th>
+                        <th>CATEGORIE</th>
+                        <th>PU</th>
+                        <th>QTE</th>
+                        <th>DESCR</th>
+                        <th>DATE</th>
+                        <th>DATE PERAMP</th>
+                        <th>STATUT</th>
+                        <th>ACTION</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for n in donnees %}
+                        <tr>
+                            <td><a href="{% url 'approvisionner2' n.id  %}"class="btn btn-outline-info">{{ n.name }}</a></td>
+                            <td>{{ n.categories }}</td>
+                            <td>{{ n.price }} FC</td>
+                            <td>{{ n.quantite }}</td>
+                            <td>{{ n.description }}</td>
+                            <td>{{ n.date_ajout }}</td>
+                            <td>{{ n.date_expiration }}</td>
+                            <td>{% if n.quantite <= 5 %}<span class="text-danger">alerte</span>{% elif n.quantite > 5 and n.quantite < 10 %}<span class="text-warning">faible</span>{% else %}<span class="text-success">bon</span>{% endif %}</td>
+                            <td><a href="{% url 'supprimerProduit' n.id %}" class="btn btn-outline-danger">del</a><a href="{% url 'viewModifierProduit' n.id  %}"class="btn btn-outline-success">update</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <main class="col-1">
+       .........
+    </main>
+</div>
+<div>
+</div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

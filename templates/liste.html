@@ -1,0 +1,68 @@
+{% extends 'staticHtml.html' %}
+{% block menuSupplementaire%}
+    <li class="m-1">
+        <a class="btn btn-sm btn-primary" href=" ">
+           <i class="icon-add_circle"></i><span>LOG OUT</span>
+       </a>
+        </li>
+    {% endblock %}
+{% block content %}
+<div class="d-flex">
+    <main class="col-1" >
+
+    </main>
+  {#            CONTENU DYNAMIQUE#}
+    <main class="bg-light shadow-lg container my-5 p-5 d-flex flex-column vh-100">
+   <div class="d-flex justify-content-between">
+       <H1>liste:</H1>
+<div style="text-align: justify" class="col-12">
+            <div class="d-flex flex-column">
+                <form method="get" action="{% url 'recherche' %}">
+                    {% csrf_token %}
+                    {{ form.as_table }}
+                    {{ form.as.p }}
+                    <button class="my-3 btn-outline-success ">
+                        Enregister
+                    </button>
+                </form>
+            </div>
+   </div>
+        <div style="text-align: justify" class="col-100">
+                <table class="table table-sm  table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Produit</th>
+
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for n in produits %}
+                        <tr>
+                            <td>{{ n.name }}</td>
+
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <main class="col-1">
+       .........
+    </main>
+</div>
+<div>
+</div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

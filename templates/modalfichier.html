@@ -1,0 +1,61 @@
+{% extends 'staticHtml.html' %}
+{% block menuSupplementaire%}
+        <li>
+        <a class="btn btn-sm btn-primary" href="">
+           <i class="icon-add_circle"></i><span>VENTE</span>
+       </a>
+        </li>
+    {% endblock %}
+{% block content %}
+<div class="d-flex">
+    <main class="col-1">
+        ...........
+    </main>
+  {#            CONTENU DYNAMIQUE#}
+    <main class="bg-light shadow-lg container my-5 p-5 d-flex flex-column vh-100">
+   <div class="d-flex justify-content-between">
+    <h1 class=" "> Products</h1>
+       <a class="btn btn-sm btn-primary" href="{% url 'produit' %}">
+           <i class="icon-add_circle"></i><span>retour</span>
+       </a>
+   </div>
+
+        <div class="modal fade" id="modal{{ 'produit.id' }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="produit_id" value="{{ 'produit.id' }}">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">reapprovisionner{{ 'produit.name' }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            <div class="modal-body">{{ form.as }}</div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">valider</button>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+        </div>
+    </main>
+    <main class="col-1">
+       .........
+    </main>
+</div>
+<div>
+
+</div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

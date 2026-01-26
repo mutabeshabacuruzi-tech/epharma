@@ -1,0 +1,47 @@
+{% load static %}
+<html>
+<head>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap/bootstrap.css' %}">
+  <style>
+    body {
+      /* Image d'arrière-plan */
+      background-image: url('static/images/hero_1.jpg');
+  </style>
+</head>
+<body>
+<header class="bg-secondary d-flex justify-content-between align-items-center">
+    <div class="m-3">
+        <img src="paci/Produits/static/images/hero_3.jpg">LOGO</img>
+
+    </div>
+    <div class="m-3">
+        <ul class="d-flex" style="list-style: none">
+            <li class="m-1">
+            <a class="btn-group-lg" href="{% url 'acc' %}">
+                <i class="icon-add_circle"> ACCUEIL</i>
+            </a>
+            </li>
+            <li class="m-1"><a class="btn-group-lg" href="{% url 'produit' %}">
+                <i class="icon-add_circle"> PRODUITS</i></a></li>
+            <li class="m-1"><a class="btn-group-lg" href="{% url 'apropos' %}">
+                <i class="icon-add_circle"> A PROPOS</i></a></li>
+            {% block  menuSupplementaire %}
+            {% endblock %}
+        </ul>
+    </div>
+</header>
+<section>
+    {% block content %}
+    {% endblock %}
+</section>
+<footer class="container-fluid bg-secondary">
+    <div>
+        <h4>realisé par l'entreprrise <em>REX Rdc.</em> Technitiens: Irs Pacifique et Calvin. Contacts: +243 995042739, 831236860</h4>
+
+
+    </div>
+</footer>
+<script src="{% static 'js/java.js' %}"></script>
+</body>
+</html>

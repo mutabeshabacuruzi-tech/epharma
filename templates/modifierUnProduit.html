@@ -1,0 +1,45 @@
+{% extends 'staticHtml.html' %}
+{% block content %}
+<div class="d-flex">
+    <main class="col-1">
+        ...........
+    </main>
+  {#            CONTENU DYNAMIQUE#}
+    <main class="bg-light shadow-lg container my-5 p-5 d-flex flex-column vh-100">
+   <div class="d-flex justify-content-between">
+    <h1 class=" "> veuillez completer ce formulaire</h1>
+       <div class="d-flex">
+       <a class="btn btn-sm btn-primary m-2" href="{% url 'produit' %}">
+           <i class="icon-add_circle"></i><span>Retour</span>
+       </a>
+{#       </a>#}
+{#           <a class="btn btn-sm btn-primary m-2" href="{% url 'modifier' %}">#}
+{#           <i class="icon-add_circle"></i><span>modifier</span>#}
+{#       </a>#}
+      </div>
+   </div>
+        <div style="text-align: justify" class="col-12">
+
+            <div class="d-flex flex-column">
+                <form method="post" action="{% url 'ControllerModifierProduit' produit.id %}">
+                    {% csrf_token %}
+                    {{ form.as_table }}
+                    <button class="my-1 btn btn-sm btn-success">
+                        Enregister
+                    </button>
+                </form>
+            </div>
+
+
+        </div>
+    </main>
+    <main class="col-1">
+       .........
+    </main>
+</div>
+<div>
+
+</div>
+</div>
+{% endblock %}
+

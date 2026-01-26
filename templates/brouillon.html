@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+
+class ProduitPharmaceutique(models.Model):
+nom = models.CharField(max_length=100)
+    description = models.TextField()
+    prix = models.DecimalField(max_digits=10, decimal_places=2)
+    quantite = models.IntegerField()
+    date_expiration = models.DateField()
+    def __str__(self):
+        return self.nom
+
+        class Client(models.Model):
+    nom = models.CharField(max_length=100)
+    adresse = models.TextField()
+
+    def __str__(self):
+        return self.nom
+
+
+
+            if request.method == 'POST':
+        username= request.POST['username']
+        email = request.POST['email']
+        password = request.POST['password']
+        password_confirm = request.POST['password_confirm']
+        if password!= password_confirm:
+            messages.error(request, 'les mots de passe sont differents.')
+            return redirect(creerCompte)
+        if len(password) < 8 or not re.search(r'[A-Za-z]', password) or not re.search(r'[0-9]', password) or not re.search(r'(/d)', password):
+            messages.error(request, 'le mot de passe doit avoir 8 caracteres.')
+            return redirect(creerCompte)
+        try:
+            validate_email(email)
+        except ValidationError:
+             messages.error(request, 'mauvais mot de passe.')
+             return redirect(creerCompte)
+        if User.objects.filter(username=username).exists():
+            messages.error(request, 'utilisateur deja existant.')
+            return redirect(creerCompte)
+        if User.objects.filter(email=email).exists():
+            messages.error(request, 'mail deja existant.')
+            return redirect(creerCompte)
+        User.objects.create_user(username=username, email=email, password=password)
+        messages.success(request, 'compte bien cree.')
+        return redirect(seConnecter)
+    return render(request, 'templates/comptes.html.')
+
+
+
+
+class Facture(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    date_facture = models.DateTimeField(auto_now_add=True)
+    total = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    def __str__(self):
+        return f"Facture #{self.id} pour {self.client.nom}"
+
+class ElementFacture(models.Model):
+    facture = models.ForeignKey(Facture, on_delete=models.CASCADE, related_name='elements')
+    produit = models.ForeignKey(ProduitPharmaceutique, on_delete=models.CASCADE)
+    quantite = models.IntegerField()
+    prix_unitaire = models.DecimalField(max_digits=10, decimal_places=2)
+    def __str__(self):
+        return f"{self.quantite} x {self.produit.nom} à {self.prix_unitaire} € chacun"
+```
+
+### Création des Formulaires (`forms.py`)
+Créons des formulaires pour gérer les factures et les éléments de facture :
+
+```python
+from django import forms
+from .models import Facture, ElementFacture
+
+class FactureForm(forms.ModelForm):
+    class Meta:
+        model = Facture
+        fields = ['client']
+
+class ElementFactureForm(forms.ModelForm):
+    class Meta:
+        model = ElementFacture
+        fields = ['produit', 'quantite', 'prix_unitaire']
+```
+
+### Création de la Vue de Facture (`views.py`)
+Ajoutons une vue pour créer une facture et ajouter des éléments de facture :
+
+```python
+from django.shortcuts import render, redirect
+from .models import Facture, ElementFacture, ProduitPharmaceutique
+from .forms import FactureForm, ElementFactureForm
+
+def creer_facture(request):
+    if request.method == 'POST':
+        facture_form = FactureForm(request.POST)
+        element_facture_formset = ElementFactureFormset(request.POST, request.FILES)
+        if facture_form.is_valid() and element_facture_formset.is_valid():
+            facture = facture_form.save()
+            for form in element_facture_formset:
+                element = form.save(commit=False)
+                element.facture = facture
+                element.save()
+            return redirect('detail_facture', facture_id=facture.id)
+    else:
+        facture_form = FactureForm()
+        element_facture_formset = ElementFactureFormset()
+    return render(request, 'creer_facture.html', {'facture_form': facture_form, 'element_facture_formset': element_facture_formset})
+
+def detail_facture(request, facture_id):
+    facture = Facture.objects.get(id=facture_id)
+    return render(request, 'detail_facture.html', {'facture': facture})
+```
+
+### Création du Template de Facture (`creer_facture.html`)
+Créons un template pour afficher le formulaire de création de facture et d'ajout d'éléments de facture :
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Créer Facture</title>
+</head>
+<body>
+    <h1>Créer une Facture</h1>
+    <form method="post">
+        {% csrf_token %}
+        {{ facture_form.as_p }}
+        {{ element_facture_formset.management_form }}
+        {% for form in element_facture_formset %}
+            {{ form.as_p }}
+        {% endfor %}
+        <button type="submit">Enregistrer la Facture</button>
+    </form>
+</body>
+</html>
+```
+
+### Template pour Afficher la Facture (`detail_facture.html`)
+Créons un template pour afficher les détails d'une facture :
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Détails de la Facture</title>
+</head>
+<body>
+    <h1>Facture #{{ facture.id }}</h1>
+    <p>Client : {{ facture.client.nom }}</p>
+    <p>Date : {{ facture.date_facture }}</p>
+    <h2>Éléments de la Facture</h2>
+    <ul>
+        {% for element in facture.elements.all %}
+            <li>{{ element.quantite }} x {{ element.produit.nom }} à {{ element.prix_unitaire }} € chacun</li>
+        {% endfor %}
+    </ul>
+    <p><strong>Total : {{ facture.total }} €</strong></p>
+</body>
+</html>
+```
+
+### Mise à Jour de l'URL (`urls.py`)
+Ajoutons des URL pour accéder aux vues de création et d'affichage des factures :
+
+```python
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('creer_facture/', views.creer_facture, name='creer_facture'),
+    path('facture/<int:facture_id>/', views.detail_facture, name='detail_facture'),
+]
+
+
+
+
+
+
+def VenteController(request, id_produit):
+    produit = get_object_or_404(models.produits, id = id_produit)
+    if request.method == 'POST':
+        form = formulaires.Vente(request.POST)
+        if form.is_valid():
+            quantite = form.cleaned_data['quantite']
+            customer= form.cleaned_data['customer']
+            if quantite > produit.quantite:
+                message = 'quantite superieure'
+            else:
+                customer, _ = customer.objects.get_or_create(name=customer)
+                total_amount = produit.price*quantite
+                sale = venteProduit(produit=produit, quantite=quantite, total_amount=total_amount, customer=customer)
+                sale.save()
+                produit.quantite -= quantite
+                # return redirect('facture', sale_id = sale_id)
+                return redirect(venteProduit)
+    else:
+        form= formulaires.Vente()
+        if produit.quantite<= 5 and not message:
+            message= 'quantite insuffisante'
+        context={
+            'produit': produit,
+           'form': form,
+            'message': message,
+        }
+    return redirect(venteProduit)
+
+        if request.method == 'POST':
+        form = formulaires.Vente(data=request.POST)
+        produit = models.produits.objects.get(id=request.POST['produit'])
+        if produit.quantite >= int(request.POST['quantite'])+ 5:
+            produit.total_amount = produit.price * request.POST['quantite']
+            form_tempo = form.save(commit=False)
+            form_tempo.total_amount = produit.total_amount
+            produit_restant = models.produits.objects.get(id)
+            produit_restant.quantite -= int(request.POST['quantite'])
+            produit_restant.save()
+            if form.is_valid():
+                form.save()
+            return redirect(venteProduit)
+        else:
+            return redirect(venteProduit)
+    else:
+            return redirect(venteProduit)
+
+
+
+
+
+   # vente = models.tableVente.objects.select_related('produit').order_by('sale_Date')
+
+
+
+
+if request.method == 'POST':
+    #     form = formulaires.Vente(request.POST)
+    #     produit = models.produits.objects.get(request, id=Produits)
+    #     quantite_demandee= int(request.POST.get('quantite'))
+    #     if produit.quantite >= quantite_demandee+5:
+    #         total = produit.price*quantite_demandee
+    #         if form.is_valid():
+    #             vente = form.save(commit=False)
+    #             vente.total_amount = total
+    #             vente.produit = produit
+    #             vente.save()
+    #
+    #             produit.quantite -= quantite_demandee
+    #             produit.save()
+    #             return redirect(venteProduit)
+    #     return redirect(home)
+
+
+# def rechercheProduit(request):
+#     querry = request.GET.get('produit')
+#     donnees = get_object_or_404(models.produits.objects.filter(name__icontains=querry))
+
+
+class facture_Client(models.Model):
+        produit = models.ForeignKey(produitVente, on_delete=models.CASCADE)
+        client = models.CharField(max_length=100)
+        quantite = models.PositiveIntegerField()
+        price = models.IntegerField()
+        sale_date = models.DateTimeField(auto_now_add=False)
+        total_amount = models.PositiveIntegerField()
+
+        def __str__(self):
+            return self.produit
+
+
+
+  def approviController(request):
+#     if request.method == 'POST':
+#         produit = get_object_or_404(models.produits, id=request.POST['produit'])
+#         form = formulaires.ApproForm(data=request.POST)
+#         if form.is_valid():
+#             quantite = form.cleaned_data['quantite']
+#         if produit.quantite < 0:
+#              form.add_error('quantite', 'quantite insuffisante.')
+#         else:
+#              produit.quantite += quantite
+#              models.approvisionnement.save(self=produit)
+        # return redirect('produit')
+
+
+
+
+
+
+
+
+
+    </title>
+</head>
+<body>
+</body>
+</html>
+
+
+
+    class factureForm(forms.ModelForm):
+#     class Meta:
+#         model = models.facture
+#         fields = ['client']
+#
+# class elementFactureForm(forms.ModelForm):
+#     class Meta:
+#         model = models.elementFacture
+#         fields = ['produit','quantite','prix_unitaire']
+
+
+
+    modal
+
+    <div class="modal fade" id="modal{{ produit.id }}" tabindex="-1" aria-hidden="true">#}
+{#                            <div class="modal-dialog">#}
+{#                                <form method="post">#}
+{#                                    {% csrf_token %}#}
+{#                                    <input type="hidden" name="produit_id" value="{{ produit.id }}">#}
+{#                                    <div class="modal-content">#}
+{#                                        <div class="modal-header">#}
+{#                                            <h5 class="modal-title">reapprovisionner{{ produit.name }}</h5>#}
+{#                                            <button type="button" class="btn-close"data-bs-dismiss="modal"></button>#}
+{#                                        </div>#}
+{#                                        <div class="modal-body">{{ form.as_p }}</div>#}
+{#                                        <div class="modal-footer">#}
+{#                                            <button type="submit" class="btn btn-primary">valider</button>#}
+{#                                        </div>#}
+{#                                    </div>>#}
+{#                            </div>#}
+{#                        </div>#}
+
+
+
+
+
+
+
+
+
+
+# class elementFacture(models.Model):
+#     facture = models.ForeignKey(facture, on_delete=models.CASCADE)
+#     produit = models.ForeignKey(produits, on_delete=models.CASCADE)
+#     quantite = models.IntegerField()
+#     prix_unitaire = models.DecimalField(max_digits=10, decimal_places=3,default=0.00)
+#     def __str__(self):
+#         return f"{self.quantite}*{self.produit.name} a {self.prix_unitaire}$ chacun"
+
