@@ -65,7 +65,6 @@ def approviController2(request,id):
              produit.quantite += quantite
              models.produits.save(self=produit)
         return redirect('produit')
-
 def showFacture2(request, id):
     if request.method == 'POST':
         sale = get_object_or_404(models.produitVente, id=id)
@@ -79,16 +78,12 @@ def showFacture2(request, id):
             models.produitVente.save(self=sale)
         return redirect(venteProduit)
 
-def creerFacture(request):
-    if request.method == 'POST':
-        factureF = formulaires.factureForm(request.POST)
-        elemetFactureF=formulaires.elementFactureForm(request.POST, request.FILES)
-        if factureF.is_valid()and elemetFactureF.is_valid():
-            facture=factureF.save()
-
-
-
-
+# def creerFacture(request):
+#     if request.method == 'POST':
+#         factureF = formulaires.factureForm(request.POST)
+#         elemetFactureF=formulaires.elementFactureForm(request.POST, request.FILES)
+#         if factureF.is_valid()and elemetFactureF.is_valid():
+#             facture=factureF.save()
 
 def ModifierCatedorie_Controller(request, categories):
     if request.method == 'POST':

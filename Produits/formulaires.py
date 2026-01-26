@@ -32,19 +32,14 @@ class Vente(forms.ModelForm):
         model = models.produitVente
         fields = "__all__"
         exclude = ["total_amount"]
-
-
-
 class ApproForm(forms.ModelForm):
     class Meta:
         model = models.produits
         fields = ['quantite']
-
 class Facture(forms.ModelForm):
     class Meta:
         model = models.produitVente
         fields = '__all__'
-
 
 class SearchForm(forms.Form):
     query = forms.CharField(
