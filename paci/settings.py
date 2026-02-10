@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-m!s*al(zl^+mc+y2_()8944u%9l($ksy^ybug@(thh!+m@0=73
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'django.contrib.auth',
-    'Produits',
-    # 'user2',
+
+    'Application',
+
 
 ]
 MIDDLEWARE = [
@@ -81,7 +81,7 @@ WSGI_APPLICATION = 'paci.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': BASE_DIR / 'epharma.sqlite3',
     }
 }
 
@@ -108,9 +108,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fr' # Pour le format d'affichage francais de : dates, devises , heure ,etc
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Lubumbashi' # Pour que le serveur utilise le fuseau horaire local de la zone dans laquelle l'application sera utilisee
 
 USE_I18N = True
 
@@ -123,6 +123,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]
 
+MEDIA_URL = '/media/' # ce dossier est obligatoir pour le stockage de tous les fichier que les utilisateurs pourront envoyer sur le serveyr
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True # Pour de raison securitaires il vaudrait mieux que la session sois supprimer a la fermeture du navigateur
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
