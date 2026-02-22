@@ -1,0 +1,105 @@
+{% extends 'staticHtml.html' %}
+
+{% block menuSupplementaire%}
+        <li class="m-1">
+        <a class="btn btn-sm btn-primary" href="{% url 'vente' %}">
+           <i class="icon-add_circle"></i><span>VENTE</span>
+       </a>
+        </li>
+    <li class="m-1">
+        <a class="btn btn-sm btn-primary" href=" ">
+           <i class="icon-add_circle"></i><span>LOG OUT</span>
+       </a>
+        </li>
+
+    {% endblock %}
+{% block content %}
+
+<div class="d-flex">
+
+    <main class="col-1">
+        ...........
+    </main>
+
+  {#            CONTENU DYNAMIQUE#}
+    <main class="bg-light shadow-lg container my-5 p-5 d-flex flex-column vh-100">
+   <div class="d-flex justify-content-between">
+    <h1 class=" "> resultat de la recherche</h1>
+       <a class="btn btn-sm btn-primary" href="{% url 'viewAjoutProduit' %}">
+           <i class="icon-add_circle"></i><span>Nouveau produit</span>
+       </a>
+   </div>
+
+        <div style="text-align: justify" class="col-100">
+
+            <div class="d-flex flex-column">
+                <table class="table table-secondary  table-bordered">
+                    <thead>
+                    <tr>
+                        <th>Produit</th>
+                        <th>Catég</th>
+                        <th>Prix</th>
+                        <th>qté</th>
+                        <th>desc</th>
+                        <th>date_ajout</th>
+                        <th>date_expir</th>
+                        <th>statut</th>
+                        <th>action</th>
+                    </tr>
+
+                    </thead>
+                    <tbody>
+                    {% for n in resultats %}
+                        <tr>
+                            <td>{{ n.name }}</td>
+                            <td>{{ n.categories }}</td>
+                            <td>{{ n.price }}</td>
+                            <td>{{ n.quantite }}</td>
+                            <td>{{ n.description }}</td>
+                            <td>{{ n.date_ajout }}</td>
+                            <td>{{ n.date_expiration }}</td>
+                            <td>
+                                {% if n.quantite == 0 %}
+                                    <span class="text-danger">Qte epuisee</span>
+                                    {% elif n.quantite > 0 and n.quantite < 10 %}
+                                    <span class="text-warning"> Qte insufisante</span>
+                                    {% else %}
+                                    <span class="text-success"> Qte suffisante</span>
+                                {% endif %}
+                            </td>
+                        <td>
+                            <a href="{% url 'supprimerProduit' n.id %}" class="btn btn-sm btn-danger"> supprimer</a>
+                            <a href="{% url 'viewModifierProduit' n.id  %}" class="btn btn-sm btn-success"> modifierrrr</a>
+                        </td>
+
+                        </tr>
+                    {% endfor %}
+
+                    </tbody>
+                </table>
+
+
+            </div>
+
+
+        </div>
+    </main>
+    <main class="col-1">
+       .........
+    </main>
+</div>
+<div>
+
+</div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

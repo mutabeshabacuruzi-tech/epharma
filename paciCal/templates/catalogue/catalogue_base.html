@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/bootstrap/bootstrap-grid.css' %}">
+    <link rel="stylesheet" href="{% static 'catalogue/css/catalogue.css' %}">
+    <title>Catalogue en ligne</title>
+</head>
+
+<body class="d-flex flex-colomn">
+    <div>{% block messages %}{% endblock %}</div>
+    <div>{% block modals %}{% endblock %}</div>
+    <main class="d-flex flex-wrap flex-md-row flex-colomn">
+        <header class="col-md-12 p-md-2 main-header bg-white d-flex justify-content-center align-items-center">
+            <h5 class="fw-bold cwp">
+                {% block cwp %}Nos produits{% endblock %}
+            </h5>
+            <div class="mx-md-2">
+                {% block options %}
+                <div class="dropdown">
+                    <button class="btn btn-secondary btn-sm dropdown-toggle" aria-expanded="false"
+                        data-bs-toggle="dropdown" type="button">Categories </button>
+                    <div class="dropdown-menu dropdown-menu-dark">
+                        <a class="dropdown-item" href="#">First Item</a>
+                        <a class="dropdown-item" href="#">Second Item</a><a class="dropdown-item" href="#">ThirdItem</a></div>
+                    </div>
+                {% endblock %}
+            </div>
+            <div class="mx-md-2 d-flex">
+                <input type="text" placeholder="Nom du produit à rechercher">
+                <button class="btn btn-sm btn-warning">Rechercher</button>
+            </div>
+        </header>
+        <section class="col-md-10 p-md-2 d-flex flex-column">
+            {% block section %}{% endblock %}
+        </section>
+        <aside class="col-md-2 d-flex justify-content-center align-items-center p-md-0">
+            {% block aside %}{% endblock %}
+        </aside>
+    </main>
+    <script src="{% static 'js/jquery.min.js' %}"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <script src="{% static 'js/calvin.js' %}"></script>
+    <script src="{% static 'catalogue/js/catalogue.js' %}"></script>
+    {% block scripts %}
+    {% endblock %}
+</body>
+
+</html>

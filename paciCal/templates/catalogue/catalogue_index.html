@@ -1,0 +1,100 @@
+{% extends "catalogue/catalogue_base.html" %}
+{% load static %}
+{% block options %}
+<div class="dropdown">
+    <button class="btn btn-secondary btn-sm dropdown-toggle" aria-expanded="false" data-bs-toggle="dropdown"
+        type="button">Categories </button>
+    <div class="dropdown-menu dropdown-menu-dark">
+        {% for categorie in categories %}
+        <a href="#categorie-{{categorie.id}}" class="dropdown-item btn btn-sm " href="#">{{categorie.name.upper}}</a>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block section %}
+<div id="categorie" class="d-flex flex-md-column produit-container">
+    {% for categorie in categories %}
+    <div id="categorie-{{categorie.id}}" class="d-flex flex-wrap pb-md-5 ">
+        <p class="font-weight-bold col-md-12 p-md-1 bg-white">
+           {{forloop.counter}} | {{categorie.name.upper}}
+        </p>
+        {% for produit in produits %}
+            {% if produit.categories == categorie %}
+                <div id="produit-{{produit.id}}" class="col-md-2 p-md-1 flex-wrap d-flex align-items-center justify-content-center" product-id="{{produit.id}}" product-name="{{produit.name.upper}}">
+                    <div class="col-md-12 d-flex flex-md-row justify-content-between">
+                        <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#details-{{produit.id}}">
+                            <span>?</span>
+                        </button>
+                        <button onclick = "add_to_chart({{produit.id}})" class="btn btn-sm btn-success">
+                            +
+                        </button>
+                    </div>
+                    <div class="col-12 d-flex flex-column produit-carte bg-white p-md-5">
+                        <p class="m-0 product-name">{{produit.name.upper}}</p><hr class="text-dark">
+                        <span class="fw-bold text-info">
+                            {{produit.price}} Fc
+                        </span>
+                        <span class="">
+                            {{produit.quantite}} {{produit.unite}}
+                        </span>
+                        <span class="">
+                            Exp.:{{produit.date_expiration}}
+                        </span>
+                    </div>
+
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+{% block aside %}
+    <form class="col-md-12 d-flex flex-column rounded-3 bg-white p-md-0">
+        <div id="panier" class="d-flex flex-column">
+        </div>
+        <button class="btn btn-sm btn-primary mt-1">Confirmer la facture</button>
+    </form>
+{% endblock %}
+{% block modal %}
+        {% for produit in produits %}
+            <div class="modal fade" role="dialog" tabindex="-1" id="details-{{ produit.id }}" aria-hidden="true"
+                aria-labelledby="details-{{ produit.id }}">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h6 class="modal-title h6">{{produit.name.upper}} {{ produit.categories.name }}</h6>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body flex-column">
+                                <form method="post" action="{% url 'module manage categorie' 'U' categorie.0.id user.id%}" class="d-flex flex-column">
+                                    {% csrf_token %}
+                                    <div class="p-md-2 p-1 bg-white rounded-3">
+                                        <span class="mb-md-2">Numéro matricule</span>
+                                        <div class="input-group">
+                                            <span class="input-group-text">
+                                                <i class="fa fa-user-o text-important"></i>
+                                            </span>
+                                            {{categorie.1.name}}
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-sm btn-primary mt-1">
+                                        <span class="bi-pen"> Modifier</span>
+                                    </button>
+                                </form>
+                        </div>
+                        <div class="modal-footer">
+                            <form action="{% url 'module manage categorie' 'D' categorie.0.id user.id %}" method="post" >
+                                {% csrf_token %}
+                                <button class="btn btn-secondary btn-sm" >
+                                    <span> Supprimer cette categorie</span>
+                                </button>
+                            </form>
+                            <button class="btn btn-dark btn-sm" type="button" data-bs-dismiss="modal">Fermer</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+{% endblock %}

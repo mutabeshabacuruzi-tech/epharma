@@ -1,0 +1,71 @@
+{% extends 'staticHtml.html' %}
+{% block menuSupplementaire%}
+
+    {% endblock %}
+{% block content %}
+<div class="d-flex">
+    <main class="col-1" ></main>
+  {#            CONTENU DYNAMIQUE#}
+    <main class="bg-light shadow-lg container my-5 p-5 d-flex flex-column vh-100">
+            <div class="d-flex justify-content-between">
+                <h3 class=" "> situation stock:</h3>
+                <div class="d-flex">
+                    <a class="btn btn-outline-success" href="{% url 'produit' %}">
+                        <i class="btn btn-outline-success"></i><span>Retour</span>
+                    </a>
+                </div>
+            </div>
+            <div style="text-align: justify" class="col-100">
+                <table class="table-striped  table-bordered">
+                    <thead class="table-success">
+                    <tr>
+                        <th>N°</th>
+                        <th>Categorie</th>
+                        <th>produits par categorie</th>
+{#                        <th>date ajout</th>#}
+                        <th>quantite/produit</th>
+                        <th>prix/produit</th>
+                        <th>Quantites/Categ</th>
+                        <th>Prix/Categ</th>
+{#                        <th>Montant tot/Categ</th>#}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for cat in categorie %}
+                     <tr>
+                         <td>{{ forloop.counter }}</td>
+                         <td><b>{{ cat.name }}</b></td>
+                         <td>{% for produit in cat.produits_set.all %}<li>{{ produit.name }}</li>{% endfor %}</td>
+{#                         <td>{% for produit in cat.produits_set.all %}{{ produit.date_ajout }}<br>{% endfor %}</td>#}
+                         <td>{% for produit in cat.produits_set.all %}{{ produit.quantite }} <br>{% endfor %}</td>
+                         <td>{% for produit in cat.produits_set.all %}{{ produit.price }}FC <br>{% endfor %}</td>
+                         <td><b class="text-success">{{ cat.total_quantite }}</b></td>
+                         <td><b>{{ cat.total_prix }} FC</b></td>
+{#                         <td><b>{{ cat.tot }}</b></td>#}
+                     <b >{{nbr_produits}}</b>
+                     </tr>
+                    {%endfor%}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+    <main class="col-1">
+
+    </main>
+</div>
+<div>
+
+</div>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+

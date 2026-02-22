@@ -1,0 +1,317 @@
+{% extends 'staticHtml.html' %}
+{% block modals %}
+<div id="modal-logout" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Demande de confirmation</h4><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">Voulez-vous deconnecter votre compte ???</p>
+            </div>
+            <div class="modal-footer"><button class="btn btn-light" type="button" data-bs-dismiss="modal">Non</button>
+            <a href="{% url 'logout user' %}" class="btn btn-primary" type="button">Oui</a>
+        </div>
+        </div>
+    </div>
+</div>
+<div id="modal-add-product" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Ajouter un produit</h4><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'ControllerAjoutProduit' %}" class="d-flex flex-column gap-2">
+                    {% csrf_token %}
+                    {{form_ajouter_produit.as_div}}
+                    <button class="btn btn-sm btn-primary mt-md-2"> Ajouter ce produit ? </button>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-light" type="button" data-bs-dismiss="modal">Non</button>
+            <a href="{% url 'logout user' %}" class="btn btn-primary" type="button">Oui</a>
+        </div>
+        </div>
+    </div>
+</div>
+<div id="modal-add-categorie" class="modal fade" role="dialog" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Ajouter une categorie de produit</h4><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'ControlerAjouterCategorie' %}" class="d-flex flex-column gap-2">
+                    {% csrf_token %}
+                    {{form_ajouter_categorie.as_div}}
+                    <button class="btn btn-sm btn-primary mt-md-2"> Ajouter cette categorie ? </button>
+                </form>
+            </div>
+            <div class="modal-footer"><button class="btn btn-light" type="button" data-bs-dismiss="modal">Non</button>
+            <a href="{% url 'logout user' %}" class="btn btn-primary" type="button">Oui</a>
+        </div>
+        </div>
+    </div>
+</div>
+{% for produit in produits %}
+    <div id="modal-modifier-produit-{{produit.id}}" class="modal fade" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Produit : {{produit.name }}</h4><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'ControllerModifierProduit' produit.id %}" class="d-flex flex-column gap-md-2">
+                        {% csrf_token %}
+                        {% for form in form_modifier_produits %}
+                            {% if form.0 == produit.id %}
+                                {{form.1.as_div}}
+                            {% endif %}
+                        {% endfor %}
+                        <button class="mt-md-2 btn btn-sm btn-primary">Enregistrer les modifications</button>
+                    </form>
+                </div>
+                
+                <div class="modal-footer">
+                    <a title="En un seul click le produit sera supprimé" href="{% url 'supprimerProduit' produit.id %}" class="btn btn-danger btn-sm" type="button">Supprimer {{ produit.name }} ?</a>
+                    <button class="btn btn-light" type="button" data-bs-dismiss="modal">Non</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% for categorie in categories %}
+    <div id="modal-modifier-categorie-{{categorie.id}}" class="modal fade" role="dialog" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Categorie : {{categorie.name }}</h4><button class="btn-close" type="button" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" action="{% url 'modifierCatego' categorie.id %}" class="d-flex flex-column gap-md-2">
+                        {% csrf_token %}
+                        {% for form in form_modifier_categorie %}
+                            {% if form.0 == categorie.id %}
+                                {{form.1.as_div}}
+                            {% endif %}
+                        {% endfor %}
+                        <button class="mt-md-2 btn btn-sm btn-primary">Enregistrer les modifications</button>
+                    </form>
+                </div>
+                
+                <div class="modal-footer">
+                    <a title="En un seul click la categorie sera supprimée" href="{% url 'supprimerCategorie' categorie.id %}" class="btn btn-danger btn-sm" type="button">Supprimer {{ categorie.name }} ?</a>
+                    <button class="btn btn-light" type="button" data-bs-dismiss="modal">Non</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{% endblock %}
+{% block menuSupplementaire %}
+<li class="m-1">
+    <a class="btn btn-sm" href="{% url 'catalogue en ligne' %}"> Catalogue en ligne </a>
+    
+</li>
+    <li class="m-1" data-bs-toggle="modal" data-bs-target="#modal-logout">
+         <a class="btn-group-lg" >
+                <i class="icon-add_circle"> log out</i>
+            </a>
+        </li>
+        {% if not user %}
+            <li class="m-1"><a class="btn btn-sm btn-primary" href="{% url 'connect' %}">
+                <i class="icon-add_circle"> Connexion</i></a>
+            </li>
+        {% endif %}
+
+    {% endblock %}
+{% block content %}
+        <div class="d-flex justify-content-center col-md-12 p-md-2 my-2">
+            <div class="bg-white shadow-lg p-md-3">
+                <main class="d-flex ">
+                    <div class="rounded-3 bg-light d-flex flex-column p-md-2 align-items-center col-md-3">
+                        <h5 class="text-center">Liste des categories des produits: <b class="text-success">{{nbr_categorie}}</b></h5>
+                        <div class="d-flex justify-content-center align-items-center">
+                            {% comment %} <a class="btn btn-outline-success btn-sm m-md-2" href="{% url 'viewAjoutProduit' %}"><span> Ajouter un produit </span></a> {% endcomment %}
+                            <a data-bs-toggle="modal" data-bs-target="#modal-add-categorie" class="btn btn-outline-success btn-sm m-md-2"><span> Ajouter une categorie de produit </span></a>
+                        </div>
+                        <div class="d-flex flex-column p-md-1">
+                            <table class="table table-sm table-hover table-bordered table-model-2">
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nom</th>
+                                    <th>Nbr produits</th>
+                                </tr>
+                                {% for categorie in categories %}
+                                    <tr data-bs-toggle="modal" data-bs-target="#modal-modifier-categorie-{{categorie.id}}">
+                                        <td>{{ forloop.counter }}</td>
+                                        <td>{{categorie.name}}</td>
+                                        <td>
+                                            {% for map in form_modifier_categorie %}
+                                                {% if map.0 == categorie.id %}
+                                                    {{map.2}}
+                                                {% endif %}
+                                            {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                                <nav class="small text-secondary d-flex justify-content-center nav-paginator">
+                                    <ul class="pagination m-0">
+                                        {% if categories.has_previous %}
+                                            <li class="page-item">
+                                                <a href="?page_categories=1" class="page-link">
+                                                    <<
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a href="?page_categories={{ categories.previous_page_number }}" class="page-link">
+                                                    precedent
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        <li class="page-item active"><a class="page-link">{{ categories.number }}</a></li>
+                                        <li class="page-item"><a class="page-link">/ {{ categories.paginator.num_pages }}</a></li>
+                                        {% if categories.has_next %}
+                                            <li class="page-item">
+                                                <a href="?page_categories={{ categories.next_page_number }}" class="page-link">
+                                                    Suivant
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a href="?page_categories={{ categories.paginator.num_pages }}" class="page-link">
+                                                    >>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="d-flex flex-column p-md-2 align-items-center">
+                            <h5> <em>produits deja enregistrés</em>: <b class="text-success">{{nbr_produits}}</b></h5>
+                            <div class="d-flex justify-content-center align-items-center">
+                                {% comment %} <a class="btn btn-outline-success btn-sm m-md-2" href="{% url 'viewAjoutProduit' %}"><span> Ajouter un produit </span></a> {% endcomment %}
+                                <a data-bs-toggle="modal" data-bs-target="#modal-add-product" class="btn btn-outline-success btn-sm m-md-2"><span> Ajouter un produit </span></a>
+                                <a class="btn btn-outline-success btn-sm m-md-2" href="{% url 'venteVue'%}"><span>ventes</span></a>
+                            <a class="btn btn-outline-success btn-sm m-md-2" href="{% url 'stock'%}"><span> mon stock</span></a></div>
+
+                        </div>
+                        <div  class="d-flex flex-column">
+                                <table class="table table-sm  table-bordered table-hover">
+                                    <thead class="table-success">
+                                    <tr>
+                                        <th>Produit</th>
+                                        <th>forme pharcque</th>
+                                        <th>voie d'admin</th>
+                                        <th>destination</th>
+                                        <th>Categorie</th>
+                                        <th>type</th>
+                                        <th>Description</th>
+                                        <th>mode deliv</th>
+                                        <th>Qté</th>
+                                        <th>Unites</th>
+                                        <th>PU</th>
+                                        <th>date</th>
+                                        <th>Date perempt</th>
+                                        <th>Statut</th>
+                                        {% comment %} <th>ACTION</th> {% endcomment %}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for n in produits %}
+                                        <tr data-bs-toggle="modal" data-bs-target="#modal-modifier-produit-{{n.id}}">
+                                            <td><a href="{% url 'approvisionner2' n.id  %}"class="btn btn-outline-info">{{ n.name }}</a></td>
+                                            <td>{{ n.forme }}</td>
+                                            <td>{{ n.usage }}</td>
+                                            <td>{{ n.destination }}</td>
+                                            <td>{{ n.categories }} FC</td>
+                                            <td>{{ n.type }}</td>
+                                            <td>{{ n.description }}</td>
+                                            <td>{{ n.mode }}</td>
+                                            <td>{{ n.quantite }}</td>
+                                            <td>{{ n.unite }}</td>
+                                            <td>{{ n.price }}</td>
+                                            <td>{{ n.date_ajout }}</td>
+                                            <td>{{ n.date_expiration }}</td>
+                                            <td>{% if n.quantite <= 5 %}<span class="text-danger">alerte</span>{% elif n.quantite > 5 and n.quantite < 10 %}<span class="text-warning">faible</span>{% else %}<span class="text-success">bon</span>{% endif %}</td>
+                                            {% comment %} <td><a href="{% url 'supprimerProduit' n.id %}" class="btn btn-outline-danger">del</a><a href="{% url 'viewModifierProduit' n.id  %}"class="btn btn-outline-success">update</a></td> {% endcomment %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                <nav class="text-secondary d-flex justify-content-center nav-paginator">
+                                    <ul class="pagination m-0">
+                                        {% if produits.has_previous %}
+                                            <li class="page-item">
+                                                <a href="?page_products=1" class="page-link">
+                                                    <<
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a href="?page_produits={{ produits.previous_page_number }}" class="page-link">
+                                                    precedent
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                        <li class="page-item active"><a class="page-link">{{ produits.number }}</a></li>
+                                        <li class="page-item"><a class="page-link">/ {{ produits.paginator.num_pages }}</a></li>
+                                        {% if produits.has_next %}
+                                            <li class="page-item">
+                                                <a href="?page_produits={{ produits.next_page_number }}" class="page-link">
+                                                    Suivant
+                                                </a>
+                                            </li>
+                                            <li class="page-item">
+                                                <a href="?page_produits={{ produits.paginator.num_pages }}" class="page-link">
+                                                    >>
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </nav>
+                        </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+{% endblock %}
+
+
+{% block toasts %}
+{% if messages %}
+        {% for msg in messages %}
+            {% if msg.tags == "success" %}
+                <div id="messages" class="toast fade text-center show d-block" role="alert">
+                        <div class="toast-header bg-success text-white"><img class="me-2" /><strong class="me-auto">Message :</strong><button class="btn-close ms-2 mb-1 close" data-bs-dismiss="toast"></button></div>
+                        <div class="toast-body d-flex flex-column justify-content-center" role="alert">
+                            <p>
+                                {{msg}}
+                            </p>
+                            <div class="d-flex justify-content-end justify-content-center"><button class="btn btn-primary btn-danger" type="button" data-bs-dismiss="toast">Fermer</button></div>
+                        </div>
+                </div>
+            {% endif %}
+            {% if msg.tag == "error" %}
+                <div id="messages" class="toast fade text-center show" role="alert">
+                    <div class="toast-header bg-danger text-white"><img class="me-2" /><strong class="me-auto">Message :</strong><button class="btn-close ms-2 mb-1 close" data-bs-dismiss="toast"></button></div>
+                    <div class="toast-body d-flex flex-column justify-content-center" role="alert">
+                        <p>
+                            {{msg}}
+                        </p>
+                        <div class="d-flex justify-content-end justify-content-center"><button class="btn btn-primary btn-danger" type="button" data-bs-dismiss="toast">Fermer</button></div>
+                    </div>
+                </div>
+            {% endif %}
+        {% endfor %}
+{% endif %}
+
+{% endblock %}
+
+
+
+
+
+
+
