@@ -136,9 +136,12 @@ def creerCompte(request):
 
 
 def tableau_stock(request):
-      categorie = models.Categories.objects.annotate(total_quantite=Sum('produits__quantite'), total_prix=Sum('produits__price')).prefetch_related('produits_set').order_by('name')
+    #   categorie = models.Categories.objects.annotate(total_quantite=Sum('produits__quantite'), total_prix=Sum('produits__price')).prefetch_related('produits_set').order_by('name')
+      stocks = models.Stock.objects.all()
+      categories = models.Categories.objects.all()
       context = {
-          'categorie': categorie,
+          'stocks': stocks,
+          'categories': categories,
       }
       return render(request, 'templates/stock.html', context=context)
 

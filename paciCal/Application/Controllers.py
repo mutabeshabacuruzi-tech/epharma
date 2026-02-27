@@ -62,14 +62,28 @@ def approviController2(request,id):
     if request.method == 'POST':
         produit = get_object_or_404(models.produits, id=id)
         form = formulaires.ApproForm(data=request.POST)
-        if form.is_valid():
-            quantite = form.cleaned_data['quantite']
-        if produit.quantite <= 0:
-             form.add_error('quantite', 'quantite insuffisante.')
-        else:
-             produit.quantite += quantite
-             models.produits.save(self=produit)
+        # je verifier si le produit est deja inscrit au stock
+        scan_stock = models.Stock.objects.filter(produit=produit)
+        # Si non je l'inscrit
+        if len(scan_stock) == 0:
+            models.Stock.objects.create(
+                produit = produit,
+                quantite = float(request.POST.get('quantite')),
+            ).save() # forcer l'enregistrement d'un object dans la BD sans passer par un formulaire
+            messages.success(request,"Inscription du produit {} au stock".format(produit))
+        else: # Si le produit est deja en stock il est donc question d'incrementer sa quantite
+            stock = models.Stock.objects.get(produit=produit) # je recuperer le stock du produit
+            stock.augementation(float(request.POST.get('quantite'))) # je me refere a la methode de classe que j'ai mise dans le model.py
+            messages.success(request,"Augementation du produit {} en stock".format(produit))
+            
+        # Apres approvisionnement il faut egalement inscrire l'operation dans la table Mouvement
+        models.MouvementStock.objects.create(
+            stock = models.Stock.objects.filter(produit=produit).first(),
+            type = "entrée",
+            quantite = float(request.POST.get('quantite'))
+        ).save()
         return redirect('produit')
+    
 def showFacture2(request, id):
     if request.method == 'POST':
         sale = get_object_or_404(models.produitVente, id=id)
@@ -184,8 +198,5 @@ def logoutControler(request):
         return redirect(views.seConnecter)
 
 
-
-
-
-
-
+def controler_gestion_stock(request):
+    pass

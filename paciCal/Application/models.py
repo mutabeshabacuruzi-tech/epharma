@@ -29,9 +29,19 @@ class Meta:
 class Stock(models.Model):
     produit = models.ForeignKey(produits, on_delete=models.CASCADE)
     quantite = models.IntegerField()
-    prix = models.IntegerField()
-    lot = models.CharField(max_length=100)
-    numero_serie = models.CharField(max_length=100)
+    
+    # definition d'une methode de classe afin de gerer automatiquement l'augementation et la diminution des qte en stock
+    def augementation(self, qte):
+        self.quantite += qte # incrementation de la quatinte en stock
+        self.save()
+        
+    # definition d'une methode de classe afin de gerer automatiquement l'augementation et la diminution des qte en stock
+    def diminution(self, qte):
+        self.quantite -= qte # decrementation de la quantite en stock
+        self.save()
+        
+    def __str__(self):
+        return "{}".format(self.produit)
 
 class MouvementStock(models.Model):
     stock = models.ForeignKey(Stock, on_delete=models.CASCADE)

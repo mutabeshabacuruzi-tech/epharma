@@ -3,10 +3,9 @@
 
     {% endblock %}
 {% block content %}
-<div class="d-flex">
-    <main class="col-1" ></main>
+<div class="col-md-12 d-flex flex-column align-items-center">
   {#            CONTENU DYNAMIQUE#}
-    <main class="bg-light shadow-lg container my-5 p-5 d-flex flex-column vh-100">
+    <main class=" shadow-lg col-md-12 my-5 p-md-3 d-flex flex-column vh-100">
             <div class="d-flex justify-content-between">
                 <h3 class=" "> situation stock:</h3>
                 <div class="d-flex">
@@ -16,37 +15,31 @@
                 </div>
             </div>
             <div style="text-align: justify" class="col-100">
-                <table class="table-striped  table-bordered">
-                    <thead class="table-success">
-                    <tr>
-                        <th>N°</th>
-                        <th>Categorie</th>
-                        <th>produits par categorie</th>
-{#                        <th>date ajout</th>#}
-                        <th>quantite/produit</th>
-                        <th>prix/produit</th>
-                        <th>Quantites/Categ</th>
-                        <th>Prix/Categ</th>
-{#                        <th>Montant tot/Categ</th>#}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% for cat in categorie %}
-                     <tr>
-                         <td>{{ forloop.counter }}</td>
-                         <td><b>{{ cat.name }}</b></td>
-                         <td>{% for produit in cat.produits_set.all %}<li>{{ produit.name }}</li>{% endfor %}</td>
-{#                         <td>{% for produit in cat.produits_set.all %}{{ produit.date_ajout }}<br>{% endfor %}</td>#}
-                         <td>{% for produit in cat.produits_set.all %}{{ produit.quantite }} <br>{% endfor %}</td>
-                         <td>{% for produit in cat.produits_set.all %}{{ produit.price }}FC <br>{% endfor %}</td>
-                         <td><b class="text-success">{{ cat.total_quantite }}</b></td>
-                         <td><b>{{ cat.total_prix }} FC</b></td>
-{#                         <td><b>{{ cat.tot }}</b></td>#}
-                     <b >{{nbr_produits}}</b>
-                     </tr>
-                    {%endfor%}
-                    </tbody>
-                </table>
+                {% for categorie in categories %}
+                <div class="d-flex flex-column p-md-2">
+                    <h6>{{categorie.name.upper}}</h6>
+                    <table class="table table-sm  table-bordered">
+                        <thead class="table-success">
+                        <tr>
+                            <th>Produit</th>
+                            <th>Qte</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            {% for stock in stocks %}
+                                {% if stock.produit.categories == categorie %}
+                                    <tr>
+                                        <td>{{stock.produit}}</td>
+                                        <td>{{stock.quantite}} {{stock.produit.unite}}</td>
+                                    </tr>
+                                {% else %}
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endfor %}
+
             </div>
         </div>
     </main>
